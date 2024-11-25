@@ -15,14 +15,20 @@ public class Rate {
         if (reducedPeriods == null || normalPeriods == null) {
             throw new IllegalArgumentException("periods cannot be null");
         }
+        if (kind == null) {
+            throw new IllegalArgumentException("kind cannot be null");
+        }
         if (normalRate == null || reducedRate == null) {
             throw new IllegalArgumentException("The rates cannot be null");
         }
         if (normalRate.compareTo(BigDecimal.ZERO) < 0 || reducedRate.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("A rate cannot be negative");
         }
-        if (normalRate.compareTo(reducedRate) <= 0) {
-            throw new IllegalArgumentException("The normal rate cannot be less or equal to the reduced rate");
+        if (normalRate.compareTo(new BigDecimal("10")) > 0) {
+            throw new IllegalArgumentException("A normalRate cannot be greater than 10");
+        }
+        if (normalRate.compareTo(reducedRate) < 0) {
+            throw new IllegalArgumentException("The normal rate cannot be less than the reduced rate");
         }
         if (!isValidPeriods(reducedPeriods) || !isValidPeriods(normalPeriods)) {
             throw new IllegalArgumentException("The periods are not valid individually");
@@ -90,7 +96,6 @@ public class Rate {
     public BigDecimal calculate(Period periodStay) {
         int normalRateHours = periodStay.occurences(normal);
         int reducedRateHours = periodStay.occurences(reduced);
-        if (this.kind==CarParkKind.VISITOR) return BigDecimal.valueOf(0);
         return (this.hourlyNormalRate.multiply(BigDecimal.valueOf(normalRateHours))).add(
                 this.hourlyReducedRate.multiply(BigDecimal.valueOf(reducedRateHours)));
     }
